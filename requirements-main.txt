@@ -1,0 +1,4 @@
+djangorestframework
+django
+channels
+channels_redis
