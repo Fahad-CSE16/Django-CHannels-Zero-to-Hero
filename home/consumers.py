@@ -3,6 +3,7 @@ from asgiref.sync import async_to_sync
 import json
 class TestConsumer(WebsocketConsumer):
     def connect(self):
+        print(self.scope['user'])
         self.room_name="test_room"
         self.group_room_name="test_group_room"
         async_to_sync(self.channel_layer.group_add)(
@@ -26,6 +27,7 @@ class TestConsumer(WebsocketConsumer):
         
 class NewConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
+        print("from consumer",self.scope['user'])
         self.room_name="new consumer"
         self.group_room_name="new_group_room"
         await(self.channel_layer.group_add)(
@@ -33,16 +35,16 @@ class NewConsumer(AsyncJsonWebsocketConsumer):
         )
         
         await self.accept()
-        await self.send(text_data=json.dumps({'status':'connected'}))
+        await self.send(text_data=json.dumps({'status':'connected from sync consumer'}))
 
     async def receive(self,text_data):
         print(text_data)
         await self.send(text_data=text_data)
         
     async def disconnect(self, *args, **kwargs):
-        await print('disconnected')
+        print('disconnected')
         
     async def send_notification(self,event):
-        print(event)
+        # print(event)
         data=event.get('value')
         await self.send(text_data=data)
