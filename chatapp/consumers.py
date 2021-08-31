@@ -3,7 +3,7 @@ import json
 from asgiref.sync import async_to_sync
 from channels.exceptions import DenyConnection
 from channels.generic.websocket import WebsocketConsumer
-from.serializers import MessageSerializer
+from .serializers import MessageSerializer
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -26,8 +26,9 @@ class ChatRoomConsumer(WebsocketConsumer):
 
     def receive(self,text_data):
         data=json.loads(text_data)
+        user=self.scope['user']
         room=RoomName.objects.get(room_name=self.room_name)
-        msg=Message.objects.create(group=room,from_user=User.objects.get(username='admin'),msg=data['msg'],to_user=User.objects.get(username='rajibulhasan'))
+        msg=Message.objects.create(group=room,from_user=user,msg=data['msg'],to_user=User.objects.get(username='rajibulhasan'))
         room = get_object_or_404(RoomName, room_name=self.room_name)
         queryset=room.room.all()[:1]
         messages = MessageSerializer(queryset, many=True)
