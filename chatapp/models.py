@@ -17,7 +17,6 @@ class Message(models.Model):
     msg=models.TextField()
     group=models.ForeignKey(RoomName, on_delete=models.CASCADE,related_name='room')
     from_user=models.ForeignKey(User, on_delete=models.CASCADE, related_name='frm')
-    to_user=models.ForeignKey(User, on_delete=models.CASCADE, related_name='to')
     created_at=models.DateTimeField(auto_now_add=True)
     class Meta:
         ordering=['-created_at']

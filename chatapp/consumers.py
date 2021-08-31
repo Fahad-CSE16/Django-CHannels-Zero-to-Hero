@@ -28,12 +28,25 @@ class ChatRoomConsumer(WebsocketConsumer):
         data=json.loads(text_data)
         user=self.scope['user']
         room=RoomName.objects.get(room_name=self.room_name)
-        msg=Message.objects.create(group=room,from_user=user,msg=data['msg'],to_user=User.objects.get(username='rajibulhasan'))
+        msg=Message.objects.create(group=room,from_user=user,msg=data['msg'])
         room = get_object_or_404(RoomName, room_name=self.room_name)
         queryset=room.room.all()[:1]
         messages = MessageSerializer(queryset, many=True)
-        self.send(text_data=json.dumps(messages.data))
+        # self.send(text_data=json.dumps(messages.data))
+        return self.send_chat_message(messages.data)
         
     def disconnect(self, *args, **kwargs):
         print('disconnected')
+    
+    def send_chat_message(self, message):
+        async_to_sync(self.channel_layer.group_send)(
+            self.room_group_name,
+            {
+                'type': 'chat_message',
+                'message': message
+            }
+        )
+    def chat_message(self, event):
+        message = event['message']
+        self.send(text_data=json.dumps(message))
     

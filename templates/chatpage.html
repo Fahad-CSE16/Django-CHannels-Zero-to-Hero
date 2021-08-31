@@ -1,5 +1,17 @@
 {% extends 'basic.html' %}
+{% block css %}
+<style>
+#chat::-webkit-scrollbar {
+  display: none;
+}
 
+/* Hide scrollbar for IE, Edge and Firefox */
+#chat {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+</style>
+{% endblock css %}
 {% block body %}
 {% load static %}
 <script src="{% static 'vue1/vue.js' %}"></script>
@@ -11,17 +23,20 @@
   With: {{usr.username}}
   </div>
   <div class="col-md-6">
-    <div v-for="m in messages">
-     <p class="text-right text-success" v-if="m.to_user.username == 'admin'"> [[m.msg]]</p>
-    <p class="text-left text-primary" v-else >  [[m.msg]]</p>
-    </div>
+  <div id="chat" style="height: 75vh; line-height:10px; overflow-y:scroll; padding-bottom:20px;padding-top:10px;">
+  
+              <div v-for="m in messages">
+              <p class="text-right text-success" v-if="m.from_user.username == user1"> [[m.msg]] : [[m.from_user.username]]</p>
+              <p class="text-left text-primary" v-else > [[m.from_user.username]] : [[m.msg]]</p>
+              </div>
+  </div>
          <form @submit.prevent="sendMessage('hello')">
                 <div class="form-group">
                   <input type="text" class="form-control"
                     name="msg" v-model="msg" required />
                 </div>
                 <button type="submit" class="btn btn-primary d-block ml-auto">Send</button>
-              </form>
+          </form>
     </div> 
   </div>
 
@@ -42,12 +57,11 @@
         messages:[],
         user1:'{{usr.username}}',
         userid: [{{usr.id}}],
-        
-        
       }
     },
     mounted: function(){
       console.log('mounted');
+      setInterval(this.updateScroll(),1000);
       
     },
     calculated: function(){
@@ -59,7 +73,12 @@
         var data = { 'msg': this.msg};
         this.connection.send(JSON.stringify(data));
         this.msg="";
-        }
+        },
+        updateScroll: function(){
+      var objDiv = document.getElementById("chat");
+        objDiv.scrollTop = objDiv.scrollHeight;
+    }
+
     },
     created: function() {
         var that=this;
@@ -73,8 +92,12 @@
         data.forEach(function(i){
             that.messages.push(i);
         })
-      console.log(that.messages);
+        var objDiv = document.getElementById("chat");
+        objDiv.scrollTop = objDiv.scrollHeight - objDiv.clientHeight;
+      
+      {% comment %} console.log(that.messages); {% endcomment %}
     }
+    
   },
   })
 

@@ -10,7 +10,6 @@ class UserModelSerializer(serializers.ModelSerializer):
         fields = ['username',]
 
 class MessageSerializer(serializers.ModelSerializer):
-    to_user = UserModelSerializer()
     from_user = UserModelSerializer()
     class Meta:
         model = Message
