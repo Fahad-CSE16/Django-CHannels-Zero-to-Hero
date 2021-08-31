@@ -17,7 +17,7 @@ class ChatRoomConsumer(WebsocketConsumer):
         if not support_room_exist(self.room_name, self.scope['user'].username):
             raise DenyConnection
         room = validate_then_get_room(room_name=self.room_name)
-        
+        self.room=room
         if not user_has_room_access(self.scope['user'],room):
             raise DenyConnection
         else:
@@ -31,15 +31,13 @@ class ChatRoomConsumer(WebsocketConsumer):
         self.send(text_data=text_data)
 
     def receive(self,text_data):
-        data=json.loads(text_data)
+        data=json.loads(text_data)['msg']
         user=self.scope['user']
-        room=RoomName.objects.get(room_name=self.room_name)
-        msg=Message.objects.create(group=room,from_user=user,msg=data['msg'])
-        room = get_object_or_404(RoomName, room_name=self.room_name)
-        queryset=room.room.all()[:1]
-        messages = MessageSerializer(queryset, many=True)
-        # self.send(text_data=json.dumps(messages.data))
-        return self.send_chat_message(messages.data)
+        msg=Message.objects.create(group=self.room,from_user=user,msg=data)
+        messages = MessageSerializer(msg, many=False)
+        data=[]
+        data.append(messages.data)
+        return self.send_chat_message(data)
         
     def disconnect(self, *args, **kwargs):
         print('disconnected')
@@ -47,6 +45,7 @@ class ChatRoomConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        
     def send_chat_message(self, message):
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
@@ -55,6 +54,7 @@ class ChatRoomConsumer(WebsocketConsumer):
                 'message': message
             }
         )
+
     def chat_message(self, event):
         message = event['message']
         self.send(text_data=json.dumps(message))
