@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 </head>
+{% block css %}{% endblock css %}
 <body style="background:black;">
     <div class="navbar menu navbar-dark bg-none mb-5 navbar-expand-sm fixed-top" style="background:none; color:white;">
     <div class="container">
@@ -28,7 +29,7 @@
         <ul class="navbar-nav ml-auto font-weight-bold">
           <li class="nav-item"> <a href="/" class="nav-link">Home</a> </li>
           {% if user.is_authenticated %}
-          <li class="nav-item"> <a href="" class="nav-link">Logout</a> </li>
+          <li class="nav-item"> <a href="{% url 'logout' %}" class="nav-link">Logout</a> </li>
           <li class="nav-item"> <a href="" class="nav-link">Chat List</a> </li>
           {% else %}
           <h4><a href=""></a></h4>

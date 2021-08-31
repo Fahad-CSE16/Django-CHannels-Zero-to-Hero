@@ -3,3 +3,4 @@ django
 channels
 channels_redis
 faker
+django-crispy-forms
