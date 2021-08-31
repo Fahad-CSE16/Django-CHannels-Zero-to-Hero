@@ -2,10 +2,10 @@
 
 ### Step1
 ```
-pip install django channels channels_redis
+pip install django channels channels_redis faker django-crispy-forms
 ```
 
-### Step2 install docker
+### Step2 install docker (if docker is not installed on your Ubuntu)
 ```
 sudo apt update
 sudo apt upgrade
