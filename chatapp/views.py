@@ -18,8 +18,17 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.views.generic import ListView
 
 # Create your views here.
-def chatView(request):
-    return render(request,'chatpage.html',{'usr':request.user})
+def chatView(request,roomname):
+    user=request.user
+    print(user)
+    roomname=roomname
+    rooms=user.group_chats.all()
+    context={
+        'usr':request.user,
+        'rooms':rooms,
+        'roomname':roomname
+    }
+    return render(request,'chatpage.html',context)
 
 
 def LoginView(request):
@@ -37,7 +46,7 @@ def LoginView(request):
                 print(user)
                 messages.success(
                     request, f"You are now logged in as {username}") 
-                return redirect('chat')
+                
             else:
                 messages.error(request, "Invalid username or password.")
         else:

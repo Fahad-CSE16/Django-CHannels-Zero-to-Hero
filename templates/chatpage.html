@@ -20,7 +20,13 @@
 <div class="container">
 <div class="row">
   <div class="col-md-3 text-white fixed">
-  With: {{usr.username}}
+  With: {{ roomname|json_script:"room-name" }}
+<h5 class="text-white">Your Available rooms:</h5>
+{% for room in rooms %}
+
+<h6 class="text-white"><a href="/chat/{{room.room_name}}/">{{room.room_name}}</a></h6>
+
+{% endfor %}
   </div>
   <div class="col-md-6">
   <div id="chat" style="height: 75vh; line-height:10px; overflow-y:scroll; padding-bottom:20px;padding-top:10px;">
@@ -82,7 +88,8 @@
     },
     created: function() {
         var that=this;
-    this.connection = new WebSocket('ws://'+ window.location.host + '/ws/chat/Fahad/')
+        const roomName = JSON.parse(document.getElementById('room-name').textContent);
+    this.connection = new WebSocket('ws://'+ window.location.host + '/ws/chat/'+ roomName + '/')
     this.connection.onopen = function(event) {
         console.log(event);
       console.log("Successfully connected to the echo websocket server...")

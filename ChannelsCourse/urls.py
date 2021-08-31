@@ -5,7 +5,7 @@ from chatapp.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', homeview),
-    path('chat/', chatView,name='chat'),
+    path('chat/<str:roomname>/', chatView,name='chat'),
     path('login/', LoginView,name='login'),
     path('logout/', LogoutView,name='logout'),
     path('students/', generate_student_data),
