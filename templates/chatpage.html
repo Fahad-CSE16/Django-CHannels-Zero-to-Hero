@@ -1,0 +1,82 @@
+{% extends 'basic.html' %}
+
+{% block body %}
+{% load static %}
+<script src="{% static 'vue1/vue.js' %}"></script>
+
+<div id="app">
+<div class="container">
+<div class="row">
+  <div class="col-md-3 text-white fixed">
+  With: {{usr.username}}
+  </div>
+  <div class="col-md-6">
+    <div v-for="m in messages">
+     <p class="text-right text-success" v-if="m.to_user.username == 'admin'"> [[m.msg]]</p>
+    <p class="text-left text-primary" v-else >  [[m.msg]]</p>
+    </div>
+         <form @submit.prevent="sendMessage('hello')">
+                <div class="form-group">
+                  <input type="text" class="form-control"
+                    name="msg" v-model="msg" required />
+                </div>
+                <button type="submit" class="btn btn-primary d-block ml-auto">Send</button>
+              </form>
+    </div> 
+  </div>
+
+</div>
+
+</div>
+{% endblock body %}
+
+{% block js %}
+<script>
+  var app = new Vue({
+    el: '#app',
+    delimiters: ['[[', ']]'],
+    
+    data() {
+      return {
+        msg:"",
+        messages:[],
+        user1:'{{usr.username}}',
+        userid: [{{usr.id}}],
+        
+        
+      }
+    },
+    mounted: function(){
+      console.log('mounted');
+      
+    },
+    calculated: function(){
+      console.log(this.messages);
+      
+    },
+    methods:{
+        sendMessage: function(message) {
+        var data = { 'msg': this.msg};
+        this.connection.send(JSON.stringify(data));
+        this.msg="";
+        }
+    },
+    created: function() {
+        var that=this;
+    this.connection = new WebSocket('ws://'+ window.location.host + '/ws/chat/Fahad/')
+    this.connection.onopen = function(event) {
+        console.log(event);
+      console.log("Successfully connected to the echo websocket server...")
+    }
+    this.connection.onmessage = function(event) {
+        data=JSON.parse(event.data);
+        data.forEach(function(i){
+            that.messages.push(i);
+        })
+      console.log(that.messages);
+    }
+  },
+  })
+
+</script>
+{% endblock  %}
